@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<FFNNConfiguration NNFolder="./FFNNData" NNInputSize="3">
+  <PairNN Type1="HW" Type2="OW" File="HW_OW.pb" InputNode="input_HW_OW" OutputNode="output_HW_OW/BiasAdd">
+    <InputNN Id="0" Name="r_ab" NormType="mean_disp" Mean="4.742907647411975" Disp="1.756721978574988"/>
+    <InputNN Id="1" Name="E_ES_EX" NormType="mean_disp" Mean="-11.756056524146206" Disp="4.93980190802023"/>
+    <InputNN Id="2" Name="E_DS" NormType="mean_disp" Mean="-0.16263576593083603" Disp="0.44320847804129065"/>
+  </PairNN>
+  <PairNN Type1="OW" Type2="OW" File="OW_OW.pb" InputNode="input_OW_OW" OutputNode="output_OW_OW/BiasAdd">
+    <InputNN Id="0" Name="r_ab" NormType="mean_disp" Mean="4.6716610298825945" Disp="1.6888822169455384"/>
+    <InputNN Id="1" Name="E_ES_EX" NormType="mean_disp" Mean="23.74514164887941" Disp="8.322890793975963"/>
+    <InputNN Id="2" Name="E_DS" NormType="mean_disp" Mean="-0.49162106955843093" Disp="0.7048399781652056"/>
+  </PairNN>
+  <PairNN Type1="HW" Type2="HW" File="HW_HW.pb" InputNode="input_HW_HW" OutputNode="output_HW_HW/BiasAdd">
+    <InputNN Id="0" Name="r_ab" NormType="mean_disp" Mean="4.830724645144087" Disp="1.7695764532720604"/>
+    <InputNN Id="1" Name="E_ES_EX" NormType="mean_disp" Mean="5.684157554028831" Disp="2.1689830026142993"/>
+    <InputNN Id="2" Name="E_DS" NormType="mean_disp" Mean="-0.056002240808942394" Disp="0.13859371243494537"/>
+  </PairNN>
+</FFNNConfiguration>
