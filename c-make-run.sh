@@ -11,12 +11,10 @@ case $NODENAME in
 "CLUSTER2" | "Cluster2" )
 C_COMP=/opt/rh/devtoolset-7/root/bin/gcc
 CXX_COMP=/opt/rh/devtoolset-7/root/bin/g++
-#BOOST_INCLUDE=/share/COMMON/MDRUNS/ARBALEST_BOOST_INCLUDE
 ;;
-"titanium" )
+"titanium" | "default" )
 C_COMP=gcc
 CXX_COMP=g++
-#BOOST_INCLUDE=/etc/arbalest/ARBALEST_BOOST_INCLUDE
 ;;
 esac
 
