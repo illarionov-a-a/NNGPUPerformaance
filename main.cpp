@@ -59,29 +59,68 @@ NNInputData getNNInputdata(std::string sfilepath,ConfigInt nSize, ConfigInt nBat
 
 }
 
+struct cmd_args
+{
+	int batch_size = 0;
+	std::string config_xml = "";
+};
+bool parse_commandline(int argc, char* argv[], cmd_args& args)
+{
+	for (int i = 1; i < argc; i++)
+	{
+		if ( strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--config_xml") == 0) {
+			args.config_xml = argv[i + 1];
+			printf("config_xml: %s", args.config_xml.c_str());
+		}
+		else if ( strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "--batch_size") == 0) {
+			args.batch_size = atoi(argv[i + 1]);
+			printf("\batch_size: %d", args.batch_size);
+		}
+	}
+
+	return true;
+}
+void split_filename(const std::string& str, std::string& filename, std::string& dirname)
+{
+	std::size_t found = str.find_last_of("/\\");
+	dirname = str.substr(0, found);
+	if (dirname.empty())
+		dirname = "./";
+	filename = str.substr(found + 1);
+}
 
 
-int main()
+int main(int argc, char* argv[])
 {
 	
 	FFNNConfiguration ffnn_config;
 	try
 	{
 		CTimer tm;
-		std::string data_path("./data/");
-		std::string xml_path = data_path + std::string("FFNNConfig.xml");
-		std::string input_path("../data/input_HH.txt");
+		cmd_args args;
+
+		if (!parse_commandline(argc, argv, args))
+		{
+			std::cout << "Invalid command line arguments";
+			return 1;
+		}
+
+		std::string xml_file, data_path;
+		split_filename(args.config_xml, xml_file, data_path);
+		
 		XmlTree xml_tree;
 		std::map<std::string, std::tuple<FFNNConfiguration::PairNN, TFPrediction<Numeric>, NNInputData> > mapPairTypeNN;
 		std::map <std::string, NNInputData> mapPairTypeInput;
-		boost::property_tree::xml_parser::read_xml(xml_path, xml_tree);
+		
+		boost::property_tree::xml_parser::read_xml(args.config_xml, xml_tree);
 		ffnn_config = read_FFNNConfiguration(xml_tree.get_child("FFNNConfiguration"));
+		std::vector<std::string> vResultsInfo;
 		for (auto& pair : ffnn_config.m_PairNNs)
 		{
-			auto pb_file_path = data_path + ffnn_config.m_sNNFolder + "/" + pair.m_sFile;
+			auto pb_file_path = data_path + "/" + ffnn_config.m_sNNFolder + "/" + pair.m_sFile;
 			auto input_data_path = pb_file_path + ".data.txt";
 			auto nn = TFPrediction<Numeric>(pb_file_path, pair.m_sInputNode,  pair.m_sOutputNode);
-			auto nninputdata = getNNInputdata(input_data_path,ffnn_config.m_nNNInputSize,1);
+			auto nninputdata = getNNInputdata(input_data_path,ffnn_config.m_nNNInputSize, args.batch_size);
 			//auto pairtype = pair.m_sType1.append("_").append(pair.m_sType2);
 			//mapPairTypeNN[pairtype] = std::make_tuple(pair,nn, nninputdata);
 			std::vector<Numeric> output;
@@ -101,7 +140,12 @@ int main()
 					return 0;
 				}
 			}
-            std::cout<< pb_file_path << " prediction time: " << tm.stop_microseconds() << "\n";
+			vResultsInfo.push_back(pb_file_path + " prediction time: " + std::to_string(tm.stop_microseconds()) + "\n");
+			std::cout << vResultsInfo.back();
+		}
+		for (const auto& info : vResultsInfo)
+		{
+			std::cout << info;
 		}
 	}
 	catch (boost::property_tree::ptree_bad_path& e)
